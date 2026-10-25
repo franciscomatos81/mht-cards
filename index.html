@@ -105,16 +105,16 @@ mark{background:var(--y);color:var(--ink);border-radius:2px;padding:0 1px}
 .ti{position:relative}
 .dot{position:absolute;left:-36px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted)}
 .dot.y{background:var(--y);border-color:var(--y);color:var(--ink)}
-.dot.now{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 0 0 4px var(--y2)}
+.dot.now{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 0 0 4px var(--okb)}
 .gapnote{font-size:12.5px;color:var(--muted);background:transparent;border:1px dashed var(--line);border-radius:9px;padding:8px 12px}
 .gapnote b{color:var(--ink);font-weight:500}
 .stp{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:4px}
 .sp{display:flex;flex-direction:column;gap:2px;min-width:0}
 .sp i{height:5px;border-radius:3px;background:var(--line)}
-.sp.d i{background:var(--y)}.sp.x i{background:var(--red)}.sp.x b{color:var(--red)}.sp.x span{color:var(--red);font-weight:600}.sp.c i{background:var(--ink)}.sp.p i{background:repeating-linear-gradient(90deg,var(--y) 0 6px,transparent 6px 10px)}
+.sp.d i{background:var(--y)}.sp.x i{background:var(--red)}.sp.x b{color:var(--red)}.sp.x span{color:var(--red);font-weight:600}.sp.c i{background:var(--ok)}.sp.p i{background:repeating-linear-gradient(90deg,var(--y) 0 6px,transparent 6px 10px)}
 .sp b{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
 .sp span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
-.sp.c b{color:var(--ink)}
+.sp.c b{color:var(--ok)}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;margin:0}
 .kv dt{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .kv dd{margin:0;font-weight:500;overflow-wrap:anywhere}
@@ -158,7 +158,7 @@ mark{background:var(--y);color:var(--ink);border-radius:2px;padding:0 1px}
 .kmore{border:0;background:transparent;color:var(--blue);font:inherit;font-size:12.5px;font-weight:500;padding:6px;cursor:pointer}
 .kempty{font-size:12px;color:var(--muted);padding:10px 4px;text-align:center}
 @media(max-width:640px){.kc{flex-basis:84vw}}
-
+.vcw{margin-top:12px;border-top:1px solid #e4e3ec;padding-top:10px}.vct{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#6b6a7b;margin-bottom:6px}.vc{background:#f6f5fa;border-radius:10px;padding:10px 12px;margin-bottom:8px}.vch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vcp{font-size:12.5px;color:#6b6a7b;margin:4px 0 6px}.vc p{margin:6px 0;color:#2a2937}.vc li{color:#2a2937}.vc ul{margin:6px 0 0 18px;padding:0}.vc li{margin:3px 0}
 body.cardmode .top,body.cardmode .main,body.cardmode #scrim,body.cardmode .dh .ib,body.cardmode .tabs,body.cardmode .card h3 button.lk{display:none!important}
 body.cardmode .drawer{position:static;transform:none;width:100%;max-width:820px;margin:0 auto;box-shadow:none;min-height:100vh;transition:none}
 body.cardmode .db{overflow:visible}
@@ -302,7 +302,7 @@ ALL.forEach(p=>{const x=PROP[KEYP(p)];p.pr=(x&&p.stage==='Reativação')?x:null;
  p.tx={mt:best,ant:Math.min(365,Math.max(30,av)),est:true}}
  if(p.pr||p.tx)thermo(p)});
 /* estado e filtros */
-const S={stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
+const S={vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
 const TOG=[['ast','Com asterisco (*)'],['pr','Com proposta de viagem'],['thv','🟢 Hora de abordar'],['tha','🟡 Ainda não é hora'],['thr','🔴 Acabou de voltar'],['thp','⚫ Já passou a hora']];
 const FAL={bot:['Bot','#8a8a9a'],tri:['Triagem','#2459b8'],hum:['Atendimento humano','#c27a00'],cot:['Cotação enviada','#1f7a4a']};
 function FAB(u){const f=u&&u.fa;if(!f)return '<span class="sub">–</span>';const a=FAL[f.k];return '<span class="badge" style="--c:'+a[1]+'">'+a[0]+'</span>'}
@@ -322,6 +322,7 @@ function pass(p,skipStage){
  if(S.chk&&!(p.cf==='média'||p.cf==='indireto'||p.amb))return false;
  if(S.ast&&!hasAst(p))return false;
  if(S.qt&&!hasQ(p))return false;
+  if(S.vca&&!(p.vc&&p.vc.some(v=>v.st==='agendada')))return false;
   if(S.pr&&!p.pr)return false;
   if((S.thv||S.tha||S.thr||S.thp)&&!((p.pr||p.tx)&&((S.thv&&(p.pr||p.tx).th==='v')||(S.tha&&(p.pr||p.tx).th==='a')||(S.thr&&(p.pr||p.tx).th==='r')||(S.thp&&(p.pr||p.tx).th==='p'))))return false;
  for(const w of words())if(!p.k.includes(w))return false;
@@ -335,7 +336,7 @@ const activeCount=()=>['stage','trips','country','dist','emi','ch','from','to','
 function renderStages(){const base=ALL.filter(p=>pass(p,true));const e=$('#stages');e.innerHTML='';
  const mk=(lab,desc,n,c,on,fn)=>{const b=el('button','st','<b>'+n.toLocaleString('pt-BR')+'</b><span>'+lab+'</span><em>'+desc+'</em>');b.style.setProperty('--c',c);b.setAttribute('aria-pressed',on);b.onclick=fn;e.appendChild(b)};
  mk('Todos','clientes e contatos',base.length,'#2a2937',!S.stage,()=>{S.stage=null;go()});
- STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()})})}
+ STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()});if(s==='Em atendimento')mk('Videocall agendada','Marcada, ainda não realizada',base.filter(p=>p.vc&&p.vc.some(v=>v.st==='agendada')).length,'#1f7a4a',!!S.vca,()=>{S.vca=S.vca?null:true;go()})})}
 function fillSelects(){const u=f=>[...new Set(ALL.flatMap(f))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
  const o=(id,l,v)=>$(id).innerHTML='<option value="">'+l+'</option>'+v.map(x=>'<option>'+esc(x)+'</option>').join('');
  o('#fCountry','País',u(p=>p.cs));o('#fDist','Distribuidor',u(p=>p.ds));o('#fEmi','Emissor',u(p=>p.es));
@@ -347,7 +348,7 @@ function syncControls(){Object.entries(SEL).forEach(([k,id])=>{const x=$(id);x.v
  $('#clr').hidden=!activeCount()}
 function hl(t){const w=words();if(!w.length)return esc(t);const nt=norm(t);for(const x of w){const i=nt.indexOf(x);if(i>=0)return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+x.length))+'</mark>'+esc(t.slice(i+x.length))}return esc(t)}
 let CUR=[];
-const KCOLS=[['Bot','Pré-atendimento no bot','#8a8a9a',p=>p.stage==='Em atendimento'&&(!p.u||!p.u.fa||p.u.fa.k==='bot')],['Triagem','Triagem humana','#2459b8',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='tri'],['Atendimento humano','Sem cotação ainda','#c27a00',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='hum'],['Cotação enviada','Aguardando decisão','#1f7a4a',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='cot'],['Pré-viagem','Fechou, vai viajar','#ffc805',p=>p.stage==='Pré-viagem'],['Em viagem','Na estrada','#1f7a4a',p=>p.stage==='Em viagem'],['Pós-viagem','Até 30 dias','#7a4fc4',p=>p.stage==='Pós-viagem'],['Reativação','Voltou há mais de 30 dias','#d9731c',p=>p.stage==='Reativação'],['Finalizado','Sem venda','#9a99a8',p=>p.stage==='Contato finalizado'||p.stage==='Cliente só no UChat']];
+const KCOLS=[['Bot','Pré-atendimento no bot','#8a8a9a',p=>p.stage==='Em atendimento'&&(!p.u||!p.u.fa||p.u.fa.k==='bot')],['Atendimento humano','Sem cotação ainda','#c27a00',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&(p.u.fa.k==='hum'||p.u.fa.k==='tri')],['Cotação enviada','Aguardando decisão','#1f7a4a',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='cot'],['Pré-viagem','Fechou, vai viajar','#ffc805',p=>p.stage==='Pré-viagem'],['Em viagem','Na estrada','#1f7a4a',p=>p.stage==='Em viagem'],['Pós-viagem','Até 30 dias','#7a4fc4',p=>p.stage==='Pós-viagem'],['Reativação','Voltou há mais de 30 dias','#d9731c',p=>p.stage==='Reativação'],['Finalizado','Sem venda','#9a99a8',p=>p.stage==='Contato finalizado'||p.stage==='Cliente só no UChat']];
 S.kn=S.kn||{};
 function renderKanban(){const r=CUR=filtered();$('#twl').hidden=true;$('#foot').innerHTML='';const kb=$('#kb');kb.hidden=false;kb.innerHTML='';
  $('#cnt').innerHTML=r.length.toLocaleString('pt-BR')+' <small>'+(r.length===1?'resultado':'resultados')+' de '+ALL.length.toLocaleString('pt-BR')+'</small>';$('#xs1').textContent='Exporta os '+r.length.toLocaleString('pt-BR')+' resultados filtrados';
@@ -415,6 +416,9 @@ function resumoExec(p){
   L.push((int.length?'Interesse: '+int.join(', ')+'. ':'Interesse ainda não informado. ')+(hasQ(p)?'Já pediu orçamento.':'Ainda não pediu orçamento.')+(u.last?' Última interação em '+fmt(u.last)+'.':''));
   L.push(fase()||'Sem fase de atendimento registrada.');
  }
+ const _vr=(p.vc||[]).filter(v=>!v.st||v.st==='realizada'),_va=(p.vc||[]).filter(v=>v.st==='agendada').sort((a,b)=>a.d<b.d?-1:1)[0];
+ if(_va&&L.length>=3)L[2]=L[2]+' Videocall agendada para '+fmt(_va.d)+(_va.h?' às '+_va.h:'')+(_va.mht&&_va.mht.length?' com '+_va.mht.join(' e '):'')+'.';
+ if(!p.rs&&_vr.length&&L.length>=3){const v=_vr.slice().sort((a,b)=>a.d<b.d?1:-1)[0];return [L[0],'Última videocall ('+v.f.toLowerCase()+', '+fmt(v.d)+', com '+(v.mht||[]).join(' e ')+'): '+v.res,L[2]]}
  if(p.rs&&L.length>=3)return [L[0],p.rs,L[2]];
  return L.slice(0,3)}
 
@@ -475,23 +479,24 @@ function renderDetail(p){
  else if(p.t)txt='Sem registro do primeiro contato. O registro mais antigo é o fechamento em '+fmt(p.t[0].s||p.t[0].p)+'.';
  else txt='Entrou no UChat em '+fmt(u.first)+'.';
  c0.appendChild(el('p',null,esc(txt)));
- {const fk=u.fa&&u.fa.k,ri=p.vf?3:fk==='cot'?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?'enviada':(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.vf?'d':'',p.vf?'citado no UChat':'não localizado'],['Viagem','','não localizada']]))}}
+ {const fk=u.fa&&u.fa.k,ri=p.vf?3:(fk==='cot'||hasQ(p))?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?(fk==='cot'?'enviada':hasQ(p)?'orçamento pedido':'enviada'):(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.vf?'d':'',p.vf?'citado no UChat':'não localizado'],['Viagem','','não localizada']]))}}
  {const h0=c0.firstChild,b0=el('div');b0.style.cssText='display:flex;flex-direction:column;gap:10px';[...c0.childNodes].slice(1).forEach(n=>b0.appendChild(n));c0.appendChild(b0);const ch0=el('span','chev','▸');h0.insertBefore(ch0,h0.firstChild);h0.style.cursor='pointer';
-  const s0=o=>{b0.style.display=o?'flex':'none';ch0.textContent=o?'▾':'▸';c0.dataset.o=o?'1':'0'};h0.onclick=()=>s0(c0.dataset.o!=='1');s0(!p.t);TGL.push(s0)}
+  const s0=o=>{b0.style.display=o?'flex':'none';ch0.textContent=o?'▾':'▸';c0.dataset.o=o?'1':'0'};h0.onclick=()=>s0(c0.dataset.o!=='1');s0(!p.t||(p.vc||[]).some(v=>v.k===-1));TGL.push(s0)}
+ {const v0=(p.vc||[]).filter(v=>v.k===-1);if(v0.length)c0.appendChild(vcBlock(v0))}
  item('0',p.t?'y':'now',c0);
  (p.t||[]).forEach((t,k)=>{
   if(k>0)gapNote(p,k,tl);
   const isLast=k===p.t.length-1,here=isLast&&p.stage!=='Reativação';
   const c=el('div','card');
   c.appendChild(el('h3',null,(k+1)+'ª viagem'+(t.c?' · '+esc(t.c):'')+'<span class="sub" style="font-weight:400;margin-left:auto">'+fmt(t.p)+' → '+fmt(t.r)+'</span>'));
-  c.appendChild(bar(tripSteps(t,k,p)));
+  c.appendChild(bar(tripSteps(t,k,p)));{const vk=(p.vc||[]).filter(v=>v.k===k);if(vk.length)c.appendChild(vcBlock(vk))}
   const kv=el('dl','kv'),ad=(a,b)=>{if(b)kv.appendChild(el('div',null,'<dt>'+a+'</dt><dd>'+esc(b)+'</dd>'))};
   const cz=CIDK(p,t);ad('Retirada',cz&&cz[0]?cz[0]:'não informada');ad('Devolução',cz&&cz[1]?cz[1]:'não informada');ad('Fechamento',t.s?fmt(t.s):'');ad('Duração',(days(D(t.p),D(t.r))+1)+' dias');const tx=TXK(p,t);ad('Locadora',tx&&tx[0]?tx[0]:'não informada');ad('Categoria do veículo',tx&&tx[1]?tx[1]:'não informada');ad('Pessoas na viagem',tx&&tx[4]?tx[4]:'não informado');ad('Assessoria',tx&&tx[2]?'Sim':'Não');ad('Valor da viagem',tx&&tx[3]!=null?'US$ '+tx[3].toLocaleString('pt-BR')+(tx[5]?' (cancelada)':''):'não informado');ad('Emissor',t.e);ad('Distribuidor',t.d||'Direto / não informado');c.appendChild(kv);
   const hd=c.firstChild,bd=el('div');bd.style.cssText='display:flex;flex-direction:column;gap:10px';[...c.childNodes].slice(1).forEach(n=>bd.appendChild(n));
   const z0=CIDK(p,t),x0=TXK(p,t),sm=el('div','sub tsm',esc([z0&&z0[0]?(z0[0]+(z0[1]&&z0[1]!==z0[0]?' → '+z0[1]:'')):'',x0&&x0[0]?x0[0]+(x0[1]?' · '+x0[1]:''):'',x0&&x0[3]!=null?'US$ '+x0[3].toLocaleString('pt-BR'):''].filter(Boolean).join('  ·  ')));
   const chev=el('span','chev','▾');hd.insertBefore(chev,hd.firstChild);hd.style.cursor='pointer';
   const setO=o=>{bd.style.display=o?'flex':'none';sm.style.display=o?'none':'block';chev.textContent=o?'▾':'▸';c.dataset.o=o?'1':'0'};
-  hd.onclick=()=>setO(c.dataset.o!=='1');c.appendChild(bd);c.insertBefore(sm,bd);setO(D(t.r)>=TODAY);TGL.push(setO);
+  hd.onclick=()=>setO(c.dataset.o!=='1');c.appendChild(bd);c.insertBefore(sm,bd);setO(D(t.r)>=TODAY||(p.vc||[]).some(v=>v.k===k));TGL.push(setO);
   item((k+1)+'ª',here?'now':'y',c)});
  if(p.t){const L=p.t[p.t.length-1];
   {const isR=p.stage==='Reativação',nv=['Em atendimento','Orçamento enviado'].includes(p.stage),c=el('div','card'),dd=days(D(L.r),TODAY);
@@ -506,7 +511,7 @@ function renderDetail(p){
  if(!p.t){const c=el('div','card');c.appendChild(el('h3',null,'1ª viagem'));c.appendChild(el('p',null,'Próxima etapa: fechar a primeira viagem.'));c.style.cssText='opacity:.55;border-style:dashed;background:var(--soft)';item('1ª','',c)}
  if(!p.t&&p.cand){const c=el('div','card');c.appendChild(el('h3',null,'Possível cliente no Odoo'));
   const x=el('p',null,'Confiança baixa: <b>'+esc(p.cand.n)+'</b> tem pontos em comum ('+esc(p.cand.ev.join(', '))+'), mas não bateu telefone nem e-mail.<br>');x.appendChild(jump(ALL[p.cand.i],'Abrir '+p.cand.n));c.appendChild(x);db.appendChild(c)}
- db.appendChild(el('p','hint','Barra cheia: etapa concluída. Tracejada: inferida. Escura: momento atual. O UChat guarda só os últimos 12 meses, então viagens antigas não têm datas do chat.'))}
+ db.appendChild(el('p','hint','Barra cheia: etapa concluída. Tracejada: inferida. Verde: momento atual. O UChat guarda só os últimos 12 meses, então viagens antigas não têm datas do chat.'))}
 function compraInfo(p){
  const T=(p.t||[]).slice().sort((a,b)=>a.p.localeCompare(b.p)),n=T.length,x=p.pr||p.tx;
  const mode=(arr)=>{const m={};arr.forEach((v,i)=>{if(v!=null&&v!=='')m[v]=(m[v]||[0,0]),m[v][0]++,m[v][1]=i});let b=null;Object.keys(m).forEach(k=>{if(!b||m[k][0]>m[b][0]||(m[k][0]===m[b][0]&&m[k][1]>m[b][1]))b=k});return b?[b,m[b][0]]:null};
@@ -553,6 +558,16 @@ function tripSteps(t,ix,p){const u=p.u||{},E=u.ev||{},sg=t.s?D(t.s):null,prev=ix
  if(pvs.length)return['Pós-viagem','d','Conversa em '+fmt(pvs[0])];
  if(late)return['Pós-viagem','x','Não realizado'];
  return['Pós-viagem',c(5,true),'até '+fmt(addD(rt,30).toISOString().slice(0,10))]})()]}
+const VCOL={'Em atendimento':'#2459b8','Pré-viagem':'#ffc805','Em viagem':'#1f7a4a','Pós-viagem':'#7a4fc4','Reativação':'#d9731c'};
+function vcBlock(list){const w=el('div','vcw');w.appendChild(el('div','vct','Videocalls'));
+ list.slice().sort((a,b)=>a.d<b.d?-1:1).forEach(v=>{const c=el('div','vc');
+  const ST={agendada:['Videocall agendada','#2459b8'],aguardando:['Aguardando gravação','#b36b00'],sem_gravacao:['Sem gravação','#c0392b']}[v.st]||['Videocall realizada','#1f7a4a'];
+  c.appendChild(el('div','vch','<span class="badge" style="--c:'+ST[1]+'">'+ST[0]+'</span><span class="badge" style="--c:'+(VCOL[v.f]||'#6b6a7b')+'">'+esc(v.f)+'</span><b>'+esc(fmt(v.d))+(v.h&&v.st?' · '+esc(v.h):'')+'</b>'+(v.m&&!v.st?'<span class="sub"> · '+v.m+' min</span>':'')));
+  c.appendChild(el('div','vcp','<b>Motorhome Trips:</b> '+esc((v.mht||[]).join(', '))+(v.st&&v.st!=='realizada'?'':' &nbsp;·&nbsp; <b>Cliente:</b> '+esc((v.cli||[]).join(', ')))));
+  if(v.st==='sem_gravacao')c.appendChild(el('p',null,'A videocall estava agendada para esta data e a gravação não foi encontrada.'));
+  if(v.res)c.appendChild(el('p',null,esc(v.res)));
+  if((v.pts||[]).length)c.appendChild(el('ul',null,v.pts.map(x=>'<li>'+esc(x)+'</li>').join('')));
+  w.appendChild(c)});return w}
 function gapNote(p,k,tl){const a=D(p.t[k-1].r),b=D(p.t[k].s||p.t[k].p),u=p.u||{},ev=[];
  if(u.first&&D(u.first)>a&&D(u.first)<b)ev.push(['Contato iniciado no chat',u.first]);
  const E=u.ev||{},nm={open:'Nova conversa',quote:'Cotação enviada',contract:'Contrato enviado',pay:'Pagamento confirmado'};
