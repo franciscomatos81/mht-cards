@@ -158,7 +158,7 @@ mark{background:var(--y);color:var(--ink);border-radius:2px;padding:0 1px}
 .kmore{border:0;background:transparent;color:var(--blue);font:inherit;font-size:12.5px;font-weight:500;padding:6px;cursor:pointer}
 .kempty{font-size:12px;color:var(--muted);padding:10px 4px;text-align:center}
 @media(max-width:640px){.kc{flex-basis:84vw}}
-.vcw{margin-top:12px;border-top:1px solid #e4e3ec;padding-top:10px}.vct{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#6b6a7b;margin-bottom:6px}.vc{background:#f6f5fa;border-radius:10px;padding:10px 12px;margin-bottom:8px}.vch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vcp{font-size:12.5px;color:#6b6a7b;margin:4px 0 6px}.vc p{margin:6px 0;color:#2a2937}.vc li{color:#2a2937}.vc ul{margin:6px 0 0 18px;padding:0}.vc li{margin:3px 0}
+.vcw{margin-top:12px;border-top:1px solid #e4e3ec;padding-top:10px}.vct{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#6b6a7b;margin-bottom:6px}.vc{background:#f6f5fa;border-radius:10px;padding:10px 12px;margin-bottom:8px}.vch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vcp{font-size:12.5px;color:#6b6a7b;margin:4px 0 6px}.vc p{margin:6px 0;color:#2a2937}.vc li{color:#2a2937}.vc ul{margin:6px 0 0 18px;padding:0}.vc li{margin:3px 0}.fact.hl{background:#ece6fa}.fact.hl b{color:#4b3a8f}
 body.cardmode .top,body.cardmode .main,body.cardmode #scrim,body.cardmode .dh .ib,body.cardmode .tabs,body.cardmode .card h3 button.lk{display:none!important}
 body.cardmode .drawer{position:static;transform:none;width:100%;max-width:820px;margin:0 auto;box-shadow:none;min-height:100vh;transition:none}
 body.cardmode .db{overflow:visible}
@@ -257,7 +257,7 @@ const STAGES=[
  ['Pós-viagem','Voltou há até 30 dias','#7a4fc4'],
  ['Reativação','Voltou há mais de 30 dias','#d9731c'],
  ['Contato finalizado','Encerrado sem venda','#9a99a8'],
- ['Contato de cliente','Contato do chat ligado a uma venda','#6b7bb8'],['Agência parceira','Agência com vendas no Odoo','#0e8a8a'],['Cliente só no UChat','Venda citada, sem viagem casada','#2a2937']];
+ ['Contato de cliente','Contato do chat ligado a uma venda','#6b7bb8'],['Agência parceira','Agência com vendas no Odoo','#0e8a8a'],['Só assessoria','Assessoria, sem locação','#5b4b9a'],['Cliente só no UChat','Venda citada, sem viagem casada','#2a2937']];
 const SC=Object.fromEntries(STAGES.map(s=>[s[0],s[2]]));
 const FL={familiar:'O contato do chat é familiar ou acompanhante de quem fechou. A conversa não é com o titular do contrato.',terceiro:'O contrato está em nome de outra pessoa, diferente do contato do chat. Provável familiar, amigo ou assistente.',via_org:'O contato do chat é um organizador ou centralizador de grupo, não o viajante.',via_ag:'O contato do chat é de uma agência, não do viajante.',org:'Possível organizador ou centralizador: costuma contratar para outras pessoas ou aparece com vários nomes no mesmo telefone ou e-mail.',ag:'O e-mail do cadastro é de uma empresa de turismo. Possível agência ou organizador.',organizador:'Possível organizador ou centralizador de grupo. Os viajantes podem não ter contato no chat.',agencia:'Agência. Os viajantes reais costumam não ter contato no chat.',parceiro:'Parceiro de indicação, não é cliente final.',interno:'Contato interno ou de teste da equipe. Não é cliente.'};
 
@@ -273,6 +273,7 @@ function classify(p){
   else if(tg.includes('FINALIZADO')){p.stage='Contato finalizado';p.sdetail='atendimento encerrado sem venda registrada'}
   else{p.stage='Em atendimento';p.sdetail=tg.includes('FOLLOW UP')?'em follow-up':tg.includes('PENDENTE')?'pendente':'conversa aberta'}
   p.last=u.last||u.first;p.ntrips=0}
+ if(p.sa){const sv=p.sa.map(x=>x.p).filter(Boolean).sort(),rp=sv.length?sv[sv.length-1]:null;p.stage='Só assessoria';p.sdetail=rp?'viagem em '+rp.slice(8,10)+'/'+rp.slice(5,7)+'/'+rp.slice(0,4):'sem data de viagem informada';p.last=rp||p.sa[0].s||p.last}
  return p}
 const ALL=[];
 DATA.clients.forEach(c=>ALL.push(classify({...c,kind:'c'})));
@@ -303,6 +304,7 @@ ALL.forEach(p=>{const x=PROP[KEYP(p)];p.pr=(x&&p.stage==='Reativação')?x:null;
  if(p.pr||p.tx)thermo(p)});
 /* estado e filtros */
 const hasAss=p=>(p.t||[]).some(t=>{const x=TXK(p,t);return x&&x[2]});
+const isAss=p=>!!(p.sa||hasAss(p));
 const hasTrip=p=>!!(p.t&&p.t.length);
 const S={ass:null,vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
 const TOG=[['ast','Com asterisco (*)'],['pr','Com proposta de viagem'],['thv','🟢 Hora de abordar'],['tha','🟡 Ainda não é hora'],['thr','🔴 Acabou de voltar'],['thp','⚫ Já passou a hora']];
@@ -420,6 +422,10 @@ function resumoExec(p){
   L.push((int.length?'Interesse: '+int.join(', ')+'. ':'Interesse ainda não informado. ')+(hasQ(p)?'Já pediu orçamento.':'Ainda não pediu orçamento.')+(u.last?' Última interação em '+fmt(u.last)+'.':''));
   L.push(fase()||'Sem fase de atendimento registrada.');
  }
+ if(typeof isAss==='function'&&isAss(p)){let _as;
+  if(p.sa){const n=p.sa.length,tot=p.sa.reduce((s,x)=>s+(x.v||0),0),ds=p.sa.map(x=>x.s).filter(Boolean).sort();_as='Cliente só de assessoria: '+n+(n>1?' contratadas':' contratada')+(ds.length?' (última em '+my(ds[ds.length-1])+')':'')+', '+usd(tot)+', sem locação com a Motorhome Trips; roteiro entregue ainda a vincular.'}
+  else{const at=T.filter(t=>{const x=TXK(p,t);return x&&x[2]});_as='Contratou assessoria'+(at.length?' na viagem de '+at.map(t=>my(t.p)).join(' e '):'')+'.'}
+  if(p.sa)L[0]=_as;else L[0]=(L[0]?L[0]+' ':'')+_as}
  const _vr=(p.vc||[]).filter(v=>!v.st||v.st==='realizada'),_va=(p.vc||[]).filter(v=>v.st==='agendada').sort((a,b)=>a.d<b.d?-1:1)[0];
  if(_va&&L.length>=3)L[2]=L[2]+' Videocall agendada para '+fmt(_va.d)+(_va.h?' às '+_va.h:'')+(_va.mht&&_va.mht.length?' com '+_va.mht.join(' e '):'')+'.';
  if(!p.rs&&_vr.length&&L.length>=3){const v=_vr.slice().sort((a,b)=>a.d<b.d?1:-1)[0];return [L[0],'Última videocall ('+v.f.toLowerCase()+', '+fmt(v.d)+', com '+(v.mht||[]).join(' e ')+'): '+v.res,L[2]]}
@@ -433,12 +439,12 @@ function renderDetail(p){
  const pv=el('button','ib','‹');pv.title='Anterior';pv.disabled=i<=0;pv.onclick=()=>step(-1);
  const nx=el('button','ib','›');nx.title='Próximo';nx.disabled=i<0||i>=CUR.length-1;nx.onclick=()=>step(1);
  const cl=el('button','ib','✕');cl.title='Fechar (Esc)';cl.onclick=closeP;top.append(pv,nx,cl);h.appendChild(top);
- h.appendChild(el('div','dmeta','<span class="badge" style="--c:'+SC[p.stage]+'">'+esc(p.stage)+'</span><span>'+esc(p.sdetail||'')+'</span>'+(i>=0?'<span class="sub">· '+(i+1)+' de '+CUR.length.toLocaleString('pt-BR')+'</span>':'')));
- if(p.t){const f=el('div','facts'),fa=(b,s)=>f.appendChild(el('div','fact','<b>'+esc(b)+'</b><span>'+s+'</span>'));
+ h.appendChild(el('div','dmeta','<span class="badge" style="--c:'+SC[p.stage]+'">'+esc(p.stage)+'</span>'+(isAss(p)?'<span class="badge" style="--c:#5b4b9a;margin-left:6px">★ Assessoria</span>':'')+'<span>'+esc(p.sdetail||'')+'</span>'+(i>=0?'<span class="sub">· '+(i+1)+' de '+CUR.length.toLocaleString('pt-BR')+'</span>':'')));
+ if(p.sa){const f=el('div','facts'),fa=(b,s)=>f.appendChild(el('div','fact','<b>'+esc(b)+'</b><span>'+s+'</span>'));fa(p.sa.length,p.sa.length===1?'assessoria':'assessorias');fa('US$ '+Math.round(p.sa.reduce((a,x)=>a+(x.v||0),0)).toLocaleString('pt-BR'),'valor contratado');fa((p.sa[0].e||'—').split(' ')[0],'especialista');h.appendChild(f)}else if(p.t){const f=el('div','facts'),fa=(b,s)=>f.appendChild(el('div','fact','<b>'+esc(b)+'</b><span>'+s+'</span>'));
   fa(p.t.length,p.t.length===1?'viagem':'viagens');fa(p.t[0].p.slice(0,4),'ano da 1ª viagem');
   if(p.t.length>1){const g=[];for(let k=1;k<p.t.length;k++)g.push(days(D(p.t[k-1].r),D(p.t[k].p))/30.4);fa(fmtM(Math.round(g.reduce((a,b)=>a+b,0)/g.length)),'entre viagens (média)')}
   if(p.cs.length)fa(p.cs.join(', '),p.cs.length===1?'país':'países');
-  fa(p.ds.length?p.ds.join(', '):'Direto','distribuidor');h.appendChild(f)}
+  fa(p.ds.length?p.ds.join(', '):'Direto','distribuidor');if(isAss(p))f.insertBefore(el('div','fact hl','<b>Assessoria</b><span>contratada</span>'),f.firstChild);h.appendChild(f)}
  const tabs=el('div','tabs');[['j','Jornada'],['u','Conversas no UChat']].forEach(([k,l])=>{const b=el('button','tab',l);b.setAttribute('role','tab');b.setAttribute('aria-selected',TAB===k);b.onclick=()=>{TAB=k;renderDetail(p)};tabs.appendChild(b)});h.appendChild(tabs);
  const db=$('#db');db.innerHTML='';
  if(TAB==='u'){db.appendChild(uchat(p));return}
@@ -481,14 +487,14 @@ function renderDetail(p){
  let txt;
  if(u.first&&(!p.t||!p.t[0].s||u.first<=p.t[0].s)&&u.first>='2023')txt='Entrou no UChat em '+fmt(u.first)+(CH[u.ch]?' pelo '+CH[u.ch]:'')+'.';
  else if(p.t)txt='Sem registro do primeiro contato. O registro mais antigo é o fechamento em '+fmt(p.t[0].s||p.t[0].p)+'.';
- else txt='Entrou no UChat em '+fmt(u.first)+'.';
+ else txt=u.first?'Entrou no UChat em '+fmt(u.first)+'.':'Sem conversa do UChat ligada a este cliente.';
  c0.appendChild(el('p',null,esc(txt)));
- {const fk=u.fa&&u.fa.k,ri=p.vf?3:(fk==='cot'||hasQ(p))?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?(fk==='cot'?'enviada':hasQ(p)?'orçamento pedido':'enviada'):(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.vf?'d':'',p.vf?'citado no UChat':'não localizado'],['Viagem','','não localizada']]))}}
+ {const fk=u.fa&&u.fa.k,ri=p.vf?3:(fk==='cot'||hasQ(p))?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t&&!p.sa){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?(fk==='cot'?'enviada':hasQ(p)?'orçamento pedido':'enviada'):(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.vf?'d':'',p.vf?'citado no UChat':'não localizado'],['Viagem','','não localizada']]))}}
  {const h0=c0.firstChild,b0=el('div');b0.style.cssText='display:flex;flex-direction:column;gap:10px';[...c0.childNodes].slice(1).forEach(n=>b0.appendChild(n));c0.appendChild(b0);const ch0=el('span','chev','▸');h0.insertBefore(ch0,h0.firstChild);h0.style.cursor='pointer';
   const s0=o=>{b0.style.display=o?'flex':'none';ch0.textContent=o?'▾':'▸';c0.dataset.o=o?'1':'0'};h0.onclick=()=>s0(c0.dataset.o!=='1');s0(!p.t||(p.vc||[]).some(v=>v.k===-1));TGL.push(s0)}
  {const v0=(p.vc||[]).filter(v=>v.k===-1);if(v0.length)c0.appendChild(vcBlock(v0))}
  item('0',p.t?'y':'now',c0);
- (p.t||[]).forEach((t,k)=>{
+ (p.sa?[]:(p.t||[])).forEach((t,k)=>{
   if(k>0)gapNote(p,k,tl);
   const isLast=k===p.t.length-1,here=isLast&&p.stage!=='Reativação';
   const c=el('div','card');
@@ -502,7 +508,8 @@ function renderDetail(p){
   const setO=o=>{bd.style.display=o?'flex':'none';sm.style.display=o?'none':'block';chev.textContent=o?'▾':'▸';c.dataset.o=o?'1':'0'};
   hd.onclick=()=>setO(c.dataset.o!=='1');c.appendChild(bd);c.insertBefore(sm,bd);setO(D(t.r)>=TODAY||(p.vc||[]).some(v=>v.k===k));TGL.push(setO);
   item((k+1)+'ª',here?'now':'y',c)});
- if(p.t){const L=p.t[p.t.length-1];
+ if(p.sa)saCards(p,item);
+ if(p.t&&!p.sa){const L=p.t[p.t.length-1];
   {const isR=p.stage==='Reativação',nv=['Em atendimento','Orçamento enviado'].includes(p.stage),c=el('div','card'),dd=days(D(L.r),TODAY);
    if(isR&&(p.pr||p.tx)){const x=p.pr||p.tx,col=x.th==='v'?'#1f9d55':x.th==='a'?'#e0a800':x.th==='p'?'#6b6b7a':'#d33a2c';c.appendChild(el('h3',null,'Reativação <span class="badge e" style="--c:'+col+'">'+(x.th==='v'?'🟢 ':x.th==='a'?'🟡 ':x.th==='p'?'⚫ ':'🔴 ')+x.tt+'</span>'));c.appendChild(el('p',null,esc('Sem nova reserva há '+fmtM(Math.floor(dd/30.4))+'. '+x.td+(x.est?' Estimativa pelo histórico do próprio cliente: mês mais frequente das retiradas e antecedência média de compra dele.':''))))}
    else if(isR){const w=p.window;c.appendChild(el('h3',null,'Reativação <span class="badge e" style="--c:'+(w==='janela'?'#1f7a4a':w==='cedo'?'#9a99a8':'#d9731c')+'">'+(w==='janela'?'Na janela de recompra':w==='cedo'?'Ainda cedo':'Esfriando')+'</span>'));
@@ -545,6 +552,15 @@ function propLite(p){const x=p.tx,c=el('div','card prop'),ci=compraInfo(p);
  ad('Fecha cerca de',ci.fecha?fmtMY(ci.fecha):'');ad('Confiança da previsão',ci.conf+' (histórico de '+ci.n+' '+(ci.n>1?'viagens':'viagem')+')');
  c.appendChild(kv);c.appendChild(el('p','sub','Este cliente ainda não tem proposta montada. Os dados acima vêm só do histórico dele.'));return c}
 
+function saCards(p,item){const u=p.u||{};
+ p.sa.forEach((x,k)=>{const c=el('div','card'),rp=x.p,rd=x.r,fim=rp?D(rd||rp):null;
+  c.appendChild(el('h3',null,'Assessoria'+(p.sa.length>1?' '+(k+1)+' de '+p.sa.length:'')+'<span class="sub" style="font-weight:400;margin-left:auto">'+(rp?fmt(rp)+(rd?' → '+fmt(rd):''):'sem data de viagem')+'</span>'));
+  const tv=rp?(TODAY>fim?'d':TODAY>=D(rp)?'c':''):'';
+  c.appendChild(bar([['Contato',u.first?'d':'p',u.first?fmt(u.first):'sem registro'],['Assessoria','d',x.s?fmt(x.s):'contratada'],['Roteiro entregue','','a vincular'],['Viagem',tv,rp?(rd?(days(D(rp),D(rd))+1)+' dias':fmt(rp)):'sem data'],['Pós-viagem',rp&&TODAY>fim?'p':'',rp?'até '+fmt(addD(fim,30).toISOString().slice(0,10)):'—']]));
+  const kv=el('dl','kv'),ad=(a,b)=>{if(b)kv.appendChild(el('div',null,'<dt>'+a+'</dt><dd>'+esc(b)+'</dd>'))};
+  ad('Contratada em',x.s?fmt(x.s):'');ad('Valor','US$ '+(x.v||0).toLocaleString('pt-BR'));ad('Especialista',x.e);
+  ad('Locação','Não contratada com a Motorhome Trips (só assessoria)');ad('Roteiro entregue','Link a ser incluído (pendente)');
+  c.appendChild(kv);item(p.sa.length>1?(k+1)+'ª':'●',k===p.sa.length-1?'now':'y',c)})}
 function jump(q,l){const b=el('button','lk',esc(l));b.onclick=()=>openP(q);return b}
 function bar(st){const w=el('div','stp');st.forEach(([a,c,v])=>w.appendChild(el('div','sp '+c,'<i></i><b>'+esc(a)+'</b><span>'+esc(v)+'</span>')));return w}
 function tripSteps(t,ix,p){const u=p.u||{},E=u.ev||{},sg=t.s?D(t.s):null,prev=ix>0?D(p.t[ix-1].r):null,pk=D(t.p),rt=D(t.r);
