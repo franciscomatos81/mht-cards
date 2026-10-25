@@ -446,7 +446,7 @@ function renderDetail(p){
   if(p.cs.length)fa(p.cs.join(', '),p.cs.length===1?'país':'países');
   fa(p.ds.length?p.ds.join(', '):'Direto','distribuidor');if(isAss(p))f.insertBefore(el('div','fact hl','<b>Assessoria</b><span>contratada</span>'),f.firstChild);h.appendChild(f)}
 {let F=h.querySelector('.facts');if(p.ix!=null){if(!F){F=el('div','facts');h.appendChild(F)}
-  const nm=p.ixk==='a'?['Volume de viagens vendidas','Receita','Anos de atividade','Vendeu nos últimos 12 meses']:['Valor vendido','Recorrência','Potencial de voltar','Serviço premium'],mx=p.ixk==='a'?[45,25,15,15]:[40,25,25,15];
+  const K=p.ixk==='h'?p.ixs:p.ixk,nm=K==='a'?['Volume de viagens vendidas','Receita','Anos de atividade','Vendeu nos últimos 12 meses']:K==='s'?['Margem de lucro','Relação com a assessoria','Potencial de voltar','Prioridade da assessoria (margem ~100%)']:['Valor (faturamento e margem)','Recorrência','Potencial de voltar','Serviço premium'],mx=K==='a'?[45,25,15,15]:K==='s'?[30,20,25,25]:[40,25,25,15];
   const t=el('div','fact ix','<b>'+p.ix+'</b><span>índice de importância</span>');t.title=(p.ixk==='h'?'Herdado do cliente ligado a este contato. ':'')+nm.map((x,i)=>x+' '+p.ixb[i]+'/'+mx[i]).join(' · ');F.insertBefore(t,F.firstChild)}}
  const tabs=el('div','tabs');[['j','Jornada'],['u','Conversas no UChat']].forEach(([k,l])=>{const b=el('button','tab',l);b.setAttribute('role','tab');b.setAttribute('aria-selected',TAB===k);b.onclick=()=>{TAB=k;renderDetail(p)};tabs.appendChild(b)});h.appendChild(tabs);
  const db=$('#db');db.innerHTML='';
