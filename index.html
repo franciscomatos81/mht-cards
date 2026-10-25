@@ -302,7 +302,9 @@ ALL.forEach(p=>{const x=PROP[KEYP(p)];p.pr=(x&&p.stage==='Reativação')?x:null;
  p.tx={mt:best,ant:Math.min(365,Math.max(30,av)),est:true}}
  if(p.pr||p.tx)thermo(p)});
 /* estado e filtros */
-const S={vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
+const hasAss=p=>(p.t||[]).some(t=>{const x=TXK(p,t);return x&&x[2]});
+const hasTrip=p=>!!(p.t&&p.t.length);
+const S={ass:null,vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
 const TOG=[['ast','Com asterisco (*)'],['pr','Com proposta de viagem'],['thv','🟢 Hora de abordar'],['tha','🟡 Ainda não é hora'],['thr','🔴 Acabou de voltar'],['thp','⚫ Já passou a hora']];
 const FAL={bot:['Bot','#8a8a9a'],tri:['Triagem','#2459b8'],hum:['Atendimento humano','#c27a00'],cot:['Cotação enviada','#1f7a4a']};
 function FAB(u){const f=u&&u.fa;if(!f)return '<span class="sub">–</span>';const a=FAL[f.k];return '<span class="badge" style="--c:'+a[1]+'">'+a[0]+'</span>'}
@@ -323,6 +325,8 @@ function pass(p,skipStage){
  if(S.ast&&!hasAst(p))return false;
  if(S.qt&&!hasQ(p))return false;
   if(S.vca&&!(p.vc&&p.vc.some(v=>v.st==='agendada')))return false;
+  if(S.ass==='com'&&!hasAss(p))return false;
+  if(S.ass==='sem'&&!(hasTrip(p)&&!hasAss(p)))return false;
   if(S.pr&&!p.pr)return false;
   if((S.thv||S.tha||S.thr||S.thp)&&!((p.pr||p.tx)&&((S.thv&&(p.pr||p.tx).th==='v')||(S.tha&&(p.pr||p.tx).th==='a')||(S.thr&&(p.pr||p.tx).th==='r')||(S.thp&&(p.pr||p.tx).th==='p'))))return false;
  for(const w of words())if(!p.k.includes(w))return false;
@@ -336,7 +340,7 @@ const activeCount=()=>['stage','trips','country','dist','emi','ch','from','to','
 function renderStages(){const base=ALL.filter(p=>pass(p,true));const e=$('#stages');e.innerHTML='';
  const mk=(lab,desc,n,c,on,fn)=>{const b=el('button','st','<b>'+n.toLocaleString('pt-BR')+'</b><span>'+lab+'</span><em>'+desc+'</em>');b.style.setProperty('--c',c);b.setAttribute('aria-pressed',on);b.onclick=fn;e.appendChild(b)};
  mk('Todos','clientes e contatos',base.length,'#2a2937',!S.stage,()=>{S.stage=null;go()});
- STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()});if(s==='Em atendimento')mk('Videocall agendada','Marcada, ainda não realizada',base.filter(p=>p.vc&&p.vc.some(v=>v.st==='agendada')).length,'#1f7a4a',!!S.vca,()=>{S.vca=S.vca?null:true;go()})})}
+ STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()});if(s==='Em atendimento')mk('Videocall agendada','Marcada, ainda não realizada',base.filter(p=>p.vc&&p.vc.some(v=>v.st==='agendada')).length,'#1f7a4a',!!S.vca,()=>{S.vca=S.vca?null:true;go()})});mk('Com assessoria','Já contratou assessoria',base.filter(hasAss).length,'#5b4b9a',S.ass==='com',()=>{S.ass=S.ass==='com'?null:'com';go()});mk('Sem assessoria','Tem viagem, sem assessoria',base.filter(p=>hasTrip(p)&&!hasAss(p)).length,'#8a7a3a',S.ass==='sem',()=>{S.ass=S.ass==='sem'?null:'sem';go()})}
 function fillSelects(){const u=f=>[...new Set(ALL.flatMap(f))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
  const o=(id,l,v)=>$(id).innerHTML='<option value="">'+l+'</option>'+v.map(x=>'<option>'+esc(x)+'</option>').join('');
  o('#fCountry','País',u(p=>p.cs));o('#fDist','Distribuidor',u(p=>p.ds));o('#fEmi','Emissor',u(p=>p.es));
