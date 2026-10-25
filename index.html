@@ -158,7 +158,7 @@ mark{background:var(--y);color:var(--ink);border-radius:2px;padding:0 1px}
 .kmore{border:0;background:transparent;color:var(--blue);font:inherit;font-size:12.5px;font-weight:500;padding:6px;cursor:pointer}
 .kempty{font-size:12px;color:var(--muted);padding:10px 4px;text-align:center}
 @media(max-width:640px){.kc{flex-basis:84vw}}
-.vcw{margin-top:12px;border-top:1px solid #e4e3ec;padding-top:10px}.vct{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#6b6a7b;margin-bottom:6px}.vc{background:#f6f5fa;border-radius:10px;padding:10px 12px;margin-bottom:8px}.vch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vcp{font-size:12.5px;color:#6b6a7b;margin:4px 0 6px}.vc p{margin:6px 0;color:#2a2937}.vc li{color:#2a2937}.vc ul{margin:6px 0 0 18px;padding:0}.vc li{margin:3px 0}.fact.hl{background:#ece6fa}.fact.hl b{color:#4b3a8f}.fact.ix{background:#e6f0fb}.fact.ix b{color:#1d4f91}
+.vcw{margin-top:12px;border-top:1px solid #e4e3ec;padding-top:10px}.vct{font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#6b6a7b;margin-bottom:6px}.vc{background:#f6f5fa;border-radius:10px;padding:10px 12px;margin-bottom:8px}.vch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vcp{font-size:12.5px;color:#6b6a7b;margin:4px 0 6px}.vc p{margin:6px 0;color:#2a2937}.vc li{color:#2a2937}.vc ul{margin:6px 0 0 18px;padding:0}.vc li{margin:3px 0}.fact.hl{background:#ece6fa}.fact.hl b{color:#4b3a8f}.iq{display:inline-block;font-size:12px;font-weight:500;padding:2px 8px;border-radius:10px;white-space:nowrap}.iq-A{background:#e0f0e6;color:#17613a}.iq-B{background:#e6f0fb;color:#1d4f91}.iq-C{background:#fdf0d8;color:#8a5a00}.iq-D{background:#eeedf3;color:#5b5a6b}.fact.iqt b{font-size:15px}.fact.iqt.iq-A{background:#e0f0e6}.fact.iqt.iq-B{background:#e6f0fb}.fact.iqt.iq-C{background:#fdf0d8}.fact.iqt.iq-D{background:#eeedf3}
 body.cardmode .top,body.cardmode .main,body.cardmode #scrim,body.cardmode .dh .ib,body.cardmode .tabs,body.cardmode .card h3 button.lk{display:none!important}
 body.cardmode .drawer{position:static;transform:none;width:100%;max-width:820px;margin:0 auto;box-shadow:none;min-height:100vh;transition:none}
 body.cardmode .db{overflow:visible}
@@ -191,7 +191,7 @@ body.cardmode .dmeta .sub{display:none}
    <span class="cnt" id="cnt"></span>
    <button class="clr" id="clr" hidden>Limpar filtros</button>
    <span class="grow"></span>
-   <label class="sort">Ordenar <select id="fSort"><option value="last">Atividade mais recente</option><option value="old">Atividade mais antiga</option><option value="name">Nome (A–Z)</option><option value="trips">Mais viagens</option><option value="ix">Maior índice de importância</option><option value="spend">Quem mais gastou</option><option value="spendlow">Quem menos gastou</option></select></label>
+   <label class="sort">Ordenar <select id="fSort"><option value="last">Atividade mais recente</option><option value="old">Atividade mais antiga</option><option value="name">Nome (A–Z)</option><option value="trips">Mais viagens</option><option value="spend">Quem mais gastou</option><option value="spendlow">Quem menos gastou</option></select></label>
    <div class="xp"><button class="xbtn" id="xBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>Exportar</button>
     <div class="menu" id="xMenu" role="menu">
      <button role="menuitem" data-x="xls"><b>Planilha (.csv)</b><small id="xs1"></small></button>
@@ -199,7 +199,7 @@ body.cardmode .dmeta .sub{display:none}
      <button role="menuitem" data-x="copy"><b>Copiar tabela</b><small>Para colar direto numa planilha</small></button>
     </div></div>
   </div>
-  <div class="vt" role="group" aria-label="Modo de visualização"><button id="vL" class="on" type="button">Lista</button><button id="vK" type="button">Kanban</button></div><div id="kb" hidden></div><div class="tw" id="twl"><table><thead><tr><th>Cliente</th><th>Etapa</th><th class="num">Viagens</th><th class="num" title="Índice de importância, 0 a 100">Índice</th><th class="hide-m">Última atividade</th><th class="hide-m">País</th><th class="hide-m">Distribuidor</th><th class="hide-m">Canal</th><th class="hide-m">Atendimento</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="vt" role="group" aria-label="Modo de visualização"><button id="vL" class="on" type="button">Lista</button><button id="vK" type="button">Kanban</button></div><div id="kb" hidden></div><div class="tw" id="twl"><table><thead><tr><th>Cliente</th><th>Etapa</th><th class="num">Viagens</th><th title="Importância do cliente para a Motorhome Trips e momento de contato">Importância</th><th class="hide-m">Última atividade</th><th class="hide-m">País</th><th class="hide-m">Distribuidor</th><th class="hide-m">Canal</th><th class="hide-m">Atendimento</th></tr></thead><tbody id="rows"></tbody></table></div>
   <div id="foot"></div>
  </section>
 </main>
@@ -305,8 +305,9 @@ ALL.forEach(p=>{const x=PROP[KEYP(p)];p.pr=(x&&p.stage==='Reativação')?x:null;
 /* estado e filtros */
 const hasAss=p=>(p.t||[]).some(t=>{const x=TXK(p,t);return x&&x[2]});
 const isAss=p=>!!(p.sa||hasAss(p));
+const IQN={A:'Atender agora',B:'Cuidar da relação',C:'Oportunidade',D:'Acompanhar'},IQD={A:'importância alta · momento bom',B:'importância alta · momento calmo',C:'importância padrão · momento bom',D:'importância padrão · momento calmo'};
 const hasTrip=p=>!!(p.t&&p.t.length);
-const S={ass:null,vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
+const S={iq:null,ass:null,vca:null,stage:null,fa:null,trips:null,country:null,dist:null,emi:null,ch:null,from:null,to:null,sort:'last',q:'',qt:null,win:null,chk:null,ast:null,n:100,sel:null,spend:null,pr:null,thv:null,tha:null,thr:null,thp:null};
 const TOG=[['ast','Com asterisco (*)'],['pr','Com proposta de viagem'],['thv','🟢 Hora de abordar'],['tha','🟡 Ainda não é hora'],['thr','🔴 Acabou de voltar'],['thp','⚫ Já passou a hora']];
 const FAL={bot:['Bot','#8a8a9a'],tri:['Triagem','#2459b8'],hum:['Atendimento humano','#c27a00'],cot:['Cotação enviada','#1f7a4a']};
 function FAB(u){const f=u&&u.fa;if(!f)return '<span class="sub">–</span>';const a=FAL[f.k];return '<span class="badge" style="--c:'+a[1]+'">'+a[0]+'</span>'}
@@ -327,7 +328,7 @@ function pass(p,skipStage){
  if(S.ast&&!hasAst(p))return false;
  if(S.qt&&!hasQ(p))return false;
   if(S.vca&&!(p.vc&&p.vc.some(v=>v.st==='agendada')))return false;
-  if(S.ass==='com'&&!hasAss(p))return false;
+  if(S.iq==='alta'&&!(p.iq==='A'||p.iq==='B'))return false; if(S.iq==='A'&&p.iq!=='A')return false; if(S.ass==='com'&&!hasAss(p))return false;
   if(S.ass==='sem'&&!(hasTrip(p)&&!hasAss(p)))return false;
   if(S.pr&&!p.pr)return false;
   if((S.thv||S.tha||S.thr||S.thp)&&!((p.pr||p.tx)&&((S.thv&&(p.pr||p.tx).th==='v')||(S.tha&&(p.pr||p.tx).th==='a')||(S.thr&&(p.pr||p.tx).th==='r')||(S.thp&&(p.pr||p.tx).th==='p'))))return false;
@@ -335,14 +336,14 @@ function pass(p,skipStage){
  return true}
 const words=()=>norm(S.q).trim().split(/\s+/).filter(Boolean);
 function filtered(){const r=ALL.filter(p=>pass(p));const s=S.sort;
- r.sort(s==='name'?(a,b)=>a.n.localeCompare(b.n,'pt-BR'):s==='spend'?(a,b)=>b.spend-a.spend:s==='spendlow'?(a,b)=>(a.hasSpend?a.spend:1e12)-(b.hasSpend?b.spend:1e12):s==='trips'?(a,b)=>b.ntrips-a.ntrips||(b.last||'').localeCompare(a.last||''):s==='ix'?(a,b)=>(b.ix==null?-1:b.ix)-(a.ix==null?-1:a.ix)||(b.last||'').localeCompare(a.last||''):s==='old'?(a,b)=>(a.last||'9').localeCompare(b.last||'9'):(a,b)=>(b.last||'').localeCompare(a.last||''));
+ r.sort(s==='name'?(a,b)=>a.n.localeCompare(b.n,'pt-BR'):s==='spend'?(a,b)=>b.spend-a.spend:s==='spendlow'?(a,b)=>(a.hasSpend?a.spend:1e12)-(b.hasSpend?b.spend:1e12):s==='trips'?(a,b)=>b.ntrips-a.ntrips||(b.last||'').localeCompare(a.last||''):s==='old'?(a,b)=>(a.last||'9').localeCompare(b.last||'9'):(a,b)=>(b.last||'').localeCompare(a.last||''));
  return r}
 const activeCount=()=>['stage','trips','country','dist','emi','ch','from','to','qt','win','chk','ast','pr','thv','tha','thr','thp'].filter(k=>S[k]!=null).length+(S.q.trim()?1:0);
 
 function renderStages(){const base=ALL.filter(p=>pass(p,true));const e=$('#stages');e.innerHTML='';
  const mk=(lab,desc,n,c,on,fn)=>{const b=el('button','st','<b>'+n.toLocaleString('pt-BR')+'</b><span>'+lab+'</span><em>'+desc+'</em>');b.style.setProperty('--c',c);b.setAttribute('aria-pressed',on);b.onclick=fn;e.appendChild(b)};
  mk('Todos','clientes e contatos',base.length,'#2a2937',!S.stage,()=>{S.stage=null;go()});
- STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()});if(s==='Em atendimento')mk('Videocall agendada','Marcada, ainda não realizada',base.filter(p=>p.vc&&p.vc.some(v=>v.st==='agendada')).length,'#1f7a4a',!!S.vca,()=>{S.vca=S.vca?null:true;go()})});mk('Com assessoria','Já contratou assessoria',base.filter(hasAss).length,'#5b4b9a',S.ass==='com',()=>{S.ass=S.ass==='com'?null:'com';go()});mk('Sem assessoria','Tem viagem, sem assessoria',base.filter(p=>hasTrip(p)&&!hasAss(p)).length,'#8a7a3a',S.ass==='sem',()=>{S.ass=S.ass==='sem'?null:'sem';go()})}
+ STAGES.forEach(([s,d,c])=>{mk(s,d,base.filter(p=>p.stage===s).length,c,S.stage===s,()=>{S.stage=S.stage===s?null:s;go()});if(s==='Em atendimento')mk('Orçamento enviado','Com orçamento registrado',base.filter(hasQ).length,'#c0392b',!!S.qt,()=>{S.qt=S.qt?null:true;go()});if(s==='Em atendimento')mk('Videocall agendada','Marcada, ainda não realizada',base.filter(p=>p.vc&&p.vc.some(v=>v.st==='agendada')).length,'#1f7a4a',!!S.vca,()=>{S.vca=S.vca?null:true;go()})});mk('Com assessoria','Já contratou assessoria',base.filter(hasAss).length,'#5b4b9a',S.ass==='com',()=>{S.ass=S.ass==='com'?null:'com';go()});mk('Sem assessoria','Tem viagem, sem assessoria',base.filter(p=>hasTrip(p)&&!hasAss(p)).length,'#8a7a3a',S.ass==='sem',()=>{S.ass=S.ass==='sem'?null:'sem';go()});mk('Importância alta','Alto valor para a empresa',base.filter(p=>p.iq==='A'||p.iq==='B').length,'#17613a',S.iq==='alta',()=>{S.iq=S.iq==='alta'?null:'alta';go()});mk('Atender agora','Importância alta e momento bom',base.filter(p=>p.iq==='A').length,'#1f7a4a',S.iq==='A',()=>{S.iq=S.iq==='A'?null:'A';go()})}
 function fillSelects(){const u=f=>[...new Set(ALL.flatMap(f))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
  const o=(id,l,v)=>$(id).innerHTML='<option value="">'+l+'</option>'+v.map(x=>'<option>'+esc(x)+'</option>').join('');
  o('#fCountry','País',u(p=>p.cs));o('#fDist','Distribuidor',u(p=>p.ds));o('#fEmi','Emissor',u(p=>p.es));
@@ -379,7 +380,7 @@ function renderRows(){if(S.view==='k'){renderKanban();return}const r=CUR=filtere
   const u=p.u||{};const alt=u.nm&&norm(u.nm)!==norm(p.n)?'no chat: '+u.nm:(p.kind==='l'?'contato do UChat':'');
   tr.innerHTML='<td><div class="nm">'+hl(p.n)+(hasAst(p)?'<span class="ast" title="'+esc(FL[p.fl]||'Vínculo indireto')+'">*</span>':'')+(alt?'<small>'+esc(alt)+'</small>':'')+'</div></td>'+
    '<td><span class="badge" style="--c:'+SC[p.stage]+'">'+esc(p.stage)+'</span><div class="sub">'+esc(p.sdetail||'')+'</div>'+(p.hasSpend?'<div class="sub">Gasto total: US$ '+Math.round(p.spend).toLocaleString('pt-BR')+'</div>':'')+(p.pr?'<div class="sub" style="color:#8a4b2a">'+(p.pr.th==='v'?'🟢':p.pr.th==='a'?'🟡':p.pr.th==='p'?'⚫':'🔴')+' ✉ proposta: '+esc(p.pr.a)+(p.pr.neg?' · evitar abordar':'')+'</div>':(p.tx?'<div class="sub">'+(p.tx.th==='v'?'🟢':p.tx.th==='a'?'🟡':p.tx.th==='p'?'⚫':'🔴')+' '+p.tx.tt+'</div>':''))+'</td>'+
-   '<td class="num">'+(p.ntrips||'–')+'</td>'+'<td class="num">'+(p.ix!=null?'<b>'+p.ix+'</b>':'–')+'</td>'+
+   '<td class="num">'+(p.ntrips||'–')+'</td>'+'<td>'+(p.iq?'<span class="iq iq-'+p.iq+'">'+IQN[p.iq]+'</span>':'<span class="sub">–</span>')+'</td>'+
    '<td class="hide-m dt">'+(p.last?fmt(p.last)+'<div class="sub">'+ago(p.last)+'</div>':'–')+'</td>'+
    '<td class="hide-m">'+(esc(p.cs.join(', '))||'–')+'</td>'+
    '<td class="hide-m">'+(esc(p.ds.join(', '))||'<span class="sub">direto / não informado</span>')+'</td>'+
@@ -445,9 +446,9 @@ function renderDetail(p){
   if(p.t.length>1){const g=[];for(let k=1;k<p.t.length;k++)g.push(days(D(p.t[k-1].r),D(p.t[k].p))/30.4);fa(fmtM(Math.round(g.reduce((a,b)=>a+b,0)/g.length)),'entre viagens (média)')}
   if(p.cs.length)fa(p.cs.join(', '),p.cs.length===1?'país':'países');
   fa(p.ds.length?p.ds.join(', '):'Direto','distribuidor');if(isAss(p))f.insertBefore(el('div','fact hl','<b>Assessoria</b><span>contratada</span>'),f.firstChild);h.appendChild(f)}
-{let F=h.querySelector('.facts');if(p.ix!=null){if(!F){F=el('div','facts');h.appendChild(F)}
+{let F=h.querySelector('.facts');if(p.iq){if(!F){F=el('div','facts');h.appendChild(F)}
   const K=p.ixk==='h'?p.ixs:p.ixk,nm=K==='a'?['Volume de viagens vendidas','Receita','Anos de atividade','Vendeu nos últimos 12 meses']:K==='s'?['Margem de lucro','Relação com a assessoria','Potencial de voltar','Prioridade da assessoria (margem ~100%)']:['Valor (faturamento e margem)','Recorrência','Potencial de voltar','Serviço premium'],mx=K==='a'?[45,25,15,15]:K==='s'?[30,20,25,25]:[40,25,25,15];
-  const t=el('div','fact ix','<b>'+p.ix+'</b><span>índice de importância</span>');t.title=(p.ixk==='h'?'Herdado do cliente ligado a este contato. ':'')+nm.map((x,i)=>x+' '+p.ixb[i]+'/'+mx[i]).join(' · ');F.insertBefore(t,F.firstChild)}}
+  const t=el('div','fact iqt iq-'+p.iq,'<b>'+IQN[p.iq]+'</b><span>'+IQD[p.iq]+'</span>');t.title=(p.ixk==='h'?'Herdado do cliente ligado a este contato. ':'')+nm.map((x,i)=>x+' '+p.ixb[i]+'/'+mx[i]).join(' · ');F.insertBefore(t,F.firstChild)}}
  const tabs=el('div','tabs');[['j','Jornada'],['u','Conversas no UChat']].forEach(([k,l])=>{const b=el('button','tab',l);b.setAttribute('role','tab');b.setAttribute('aria-selected',TAB===k);b.onclick=()=>{TAB=k;renderDetail(p)};tabs.appendChild(b)});h.appendChild(tabs);
  const db=$('#db');db.innerHTML='';
  if(TAB==='u'){db.appendChild(uchat(p));return}
