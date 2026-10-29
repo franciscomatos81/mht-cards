@@ -138,13 +138,16 @@ mark{background:var(--y);color:var(--ink);border-radius:2px;padding:0 1px}
  .main{padding:12px}.stages{grid-template-columns:repeat(2,1fr)}
  .hide-m{display:none}
  thead{display:none}tbody tr{display:grid;grid-template-columns:1fr auto;padding:10px 14px;border-top:1px solid var(--line);gap:4px}
- td{border:0;padding:0}td.num{text-align:right}
+ td{border:0;padding:0}td.num{text-align:left;font-size:12px;color:var(--muted)}td.num b{color:var(--ink)}
+ td.num::before{content:attr(data-l) " ";font-weight:400}td.num.nul{display:none}
+ tbody td:nth-child(3){grid-column:1}tbody td:nth-child(4){grid-column:2;text-align:right}
  .dd select{max-width:150px}
 }
 .prop details{margin-top:10px}.prop summary{cursor:pointer;font-weight:500}.prop pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.5;background:var(--soft);padding:12px;border-radius:6px;margin:8px 0}.prop p.sub{margin-top:8px}.thermo{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:8px;margin:8px 0;color:#222}.thermo .lamp{width:18px;height:18px;border-radius:50%;flex:none;background:var(--tc)}.th-v{--tc:#1f9d55;background:#e8f6ee}.th-a{--tc:#e0a800;background:#fff7dc}.th-r{--tc:#d33a2c;background:#fdeceb}.th-p{--tc:#6b6b7a;background:#eceaf0}.thermo span:not(.lamp){font-size:13px}.vt{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:0 0 12px;background:var(--card)}
 .vt button{border:0;background:transparent;padding:6px 16px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted)}
 .vt button.on{background:var(--ink);color:#fff}
 #kb{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;align-items:flex-start}
+#kb[hidden],#twl[hidden]{display:none!important}
 .kc{flex:0 0 268px;background:var(--soft);border-radius:10px;display:flex;flex-direction:column;max-height:74vh;min-width:0}
 .kh{padding:10px 12px 8px;border-top:4px solid var(--c);border-radius:10px 10px 0 0;display:flex;align-items:baseline;gap:8px}
 .kh b{font-size:14px}.kh span{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -182,7 +185,7 @@ body.cardmode .dmeta .sub{display:none}
    <span class="dd"><select id="fDist" aria-label="Distribuidor"></select></span>
    <span class="dd"><select id="fEmi" aria-label="Emissor"></select></span>
    <span class="dd"><select id="fSpend" aria-label="Gasto total"><option value="">Gasto total</option><option value="lt3">Até US$ 3 mil</option><option value="3-6">US$ 3 a 6 mil</option><option value="6-10">US$ 6 a 10 mil</option><option value="gt10">Acima de US$ 10 mil</option></select></span>
-   <span class="dd"><select id="fCh" aria-label="Canal"><option value="">Canal</option><option value="wa">WhatsApp</option><option value="ig">Instagram</option><option value="none">Sem conversa no UChat</option></select></span>
+   <span class="dd"><select id="fCh" aria-label="Canal"><option value="">Canal</option><option value="wa">WhatsApp</option><option value="ig">Instagram</option><option value="igl">Lead do Instagram (sem cliente no Odoo)</option><option value="none">Sem conversa no UChat</option></select></span>
    <span class="dd"><select id="fFase" aria-label="Fase do atendimento"><option value="">Fase do atendimento</option><option value="bot">Bot (pré-atendimento)</option><option value="hum">Atendimento humano, sem cotação</option><option value="cot">Cotação enviada</option><option value="sem">Sem conversa no UChat</option></select></span>
    <label class="date" id="dWrap" style="display:none">Atividade <input id="fFrom" type="date" aria-label="Atividade de"> a <input id="fTo" type="date" aria-label="Atividade até"></label>
    <span class="sep"></span>
@@ -258,7 +261,7 @@ const STAGES=[
  ['Pós-viagem','Voltou há até 30 dias','#7a4fc4'],
  ['Reativação','Voltou há mais de 30 dias','#d9731c'],
  ['Contato finalizado','Encerrado sem venda','#9a99a8'],
- ['Contato de cliente','Contato do chat ligado a uma venda','#6b7bb8'],['Agência parceira','Agência com vendas no Odoo','#0e8a8a'],['Só assessoria','Assessoria, sem locação','#5b4b9a'],['Cliente só no UChat','Venda citada, sem viagem casada','#2a2937']];
+ ['Contato de cliente','Contato do chat ligado a uma venda','#6b7bb8'],['Agência parceira','Agência com vendas no Odoo','#0e8a8a'],['Só assessoria','Assessoria, sem locação','#5b4b9a'],];
 const SC=Object.fromEntries(STAGES.map(s=>[s[0],s[2]]));
 const FL={familiar:'O contato do chat é familiar ou acompanhante de quem fechou. A conversa não é com o titular do contrato.',terceiro:'O contrato está em nome de outra pessoa, diferente do contato do chat. Provável familiar, amigo ou assistente.',via_org:'O contato do chat é um organizador ou centralizador de grupo, não o viajante.',via_ag:'O contato do chat é de uma agência, não do viajante.',org:'Possível organizador ou centralizador: costuma contratar para outras pessoas ou aparece com vários nomes no mesmo telefone ou e-mail.',ag:'O e-mail do cadastro é de uma empresa de turismo. Possível agência ou organizador.',organizador:'Possível organizador ou centralizador de grupo. Os viajantes podem não ter contato no chat.',agencia:'Agência. Os viajantes reais costumam não ter contato no chat.',parceiro:'Parceiro de indicação, não é cliente final.',interno:'Contato interno ou de teste da equipe. Não é cliente.'};
 
@@ -270,7 +273,7 @@ function classify(p){
   p.last=L.r;p.ntrips=p.t.length;p.window=null;
   if(p.stage==='Reativação'){const m=days(rt,TODAY)/30.4;p.window=m<12?'cedo':m<=36?'janela':'esfriando'}
  }else{const u=p.u,tg=u.tags||[];
-  if(p.ld){p.stage='Agência parceira';p.sdetail=p.ld.n+(p.ld.n===1?' viagem vendida':' viagens vendidas')}else if(p.lk){p.stage='Contato de cliente';p.sdetail='ligado a '+p.lk[0]+(p.lk.length>1?' +'+(p.lk.length-1):'')}else if(p.vf){p.stage='Cliente só no UChat';p.sdetail='tem vendas citadas no UChat'}
+  if(p.ld){p.stage='Agência parceira';p.sdetail=p.ld.n+(p.ld.n===1?' viagem vendida':' viagens vendidas')}else if(p.lk){p.stage='Contato de cliente';p.sdetail='ligado a '+p.lk[0]+(p.lk.length>1?' +'+(p.lk.length-1):'')}
   else if(tg.includes('FINALIZADO')){p.stage='Contato finalizado';p.sdetail='atendimento encerrado sem venda registrada'}
   else{p.stage='Em atendimento';p.sdetail=tg.includes('FOLLOW UP')?'em follow-up':tg.includes('PENDENTE')?'pendente':'conversa aberta'}
   p.last=u.last||u.first;p.ntrips=0}
@@ -319,7 +322,7 @@ function pass(p,skipStage){
  if(S.spend){const v=p.spend,r=S.spend;if(!p.hasSpend)return false;if(r==='lt3'&&v>=3000)return false;if(r==='3-6'&&(v<3000||v>=6000))return false;if(r==='6-10'&&(v<6000||v>=10000))return false;if(r==='gt10'&&v<10000)return false}
  if(S.dist&&!p.ds.includes(S.dist))return false;
  if(S.emi&&!p.es.includes(S.emi))return false;
- if(S.ch){if(S.ch==='none'?p.u:!(p.u&&p.u.ch===S.ch))return false}
+ if(S.ch){if(S.ch==='igl'){if(!(p.kind==='l'&&p.u&&p.u.ch==='ig'&&!(p.lk&&p.lk.length)&&!p.ld))return false}else if(S.ch==='none'?p.u:!(p.u&&p.u.ch===S.ch))return false}
  if(S.fa){const f=p.u&&p.u.fa;if(S.fa==='sem'?p.u:!(f&&f.k===S.fa))return false}
  if(S.from&&!(p.last&&p.last>=S.from))return false;
  if(S.to&&!(p.last&&p.last<=S.to))return false;
@@ -355,7 +358,7 @@ function syncControls(){Object.entries(SEL).forEach(([k,id])=>{const x=$(id);x.v
  $('#clr').hidden=!activeCount()}
 function hl(t){const w=words();if(!w.length)return esc(t);const nt=norm(t);for(const x of w){const i=nt.indexOf(x);if(i>=0)return esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+x.length))+'</mark>'+esc(t.slice(i+x.length))}return esc(t)}
 let CUR=[];
-const KCOLS=[['Bot','Pré-atendimento no bot','#8a8a9a',p=>p.stage==='Em atendimento'&&(!p.u||!p.u.fa||p.u.fa.k==='bot')],['Atendimento humano','Sem cotação ainda','#c27a00',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='hum'],['Cotação enviada','Aguardando decisão','#1f7a4a',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='cot'],['Pré-viagem','Fechou, vai viajar','#ffc805',p=>p.stage==='Pré-viagem'],['Em viagem','Na estrada','#1f7a4a',p=>p.stage==='Em viagem'],['Pós-viagem','Até 30 dias','#7a4fc4',p=>p.stage==='Pós-viagem'],['Reativação','Voltou há mais de 30 dias','#d9731c',p=>p.stage==='Reativação'],['Finalizado','Sem venda','#9a99a8',p=>p.stage==='Contato finalizado'||p.stage==='Cliente só no UChat']];
+const KCOLS=[['Bot','Pré-atendimento no bot','#8a8a9a',p=>p.stage==='Em atendimento'&&(!p.u||!p.u.fa||p.u.fa.k==='bot')],['Atendimento humano','Sem cotação ainda','#c27a00',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='hum'],['Cotação enviada','Aguardando decisão','#1f7a4a',p=>p.stage==='Em atendimento'&&p.u&&p.u.fa&&p.u.fa.k==='cot'],['Pré-viagem','Fechou, vai viajar','#ffc805',p=>p.stage==='Pré-viagem'],['Em viagem','Na estrada','#1f7a4a',p=>p.stage==='Em viagem'],['Pós-viagem','Até 30 dias','#7a4fc4',p=>p.stage==='Pós-viagem'],['Reativação','Voltou há mais de 30 dias','#d9731c',p=>p.stage==='Reativação'],['Finalizado','Sem venda','#9a99a8',p=>p.stage==='Contato finalizado']];
 S.kn=S.kn||{};
 function renderKanban(){const r=CUR=filtered();$('#twl').hidden=true;$('#foot').innerHTML='';const kb=$('#kb');kb.hidden=false;kb.innerHTML='';
  $('#cnt').innerHTML=r.length.toLocaleString('pt-BR')+' <small>'+(r.length===1?'resultado':'resultados')+' de '+ALL.length.toLocaleString('pt-BR')+'</small>';$('#xs1').textContent='Exporta os '+r.length.toLocaleString('pt-BR')+' resultados filtrados';
@@ -380,11 +383,12 @@ function renderRows(){if(S.view==='k'){renderKanban();return}const r=CUR=filtere
   const u=p.u||{};const alt=u.nm&&norm(u.nm)!==norm(p.n)?'no chat: '+u.nm:(p.kind==='l'?'contato do UChat':'');
   tr.innerHTML='<td><div class="nm">'+hl(p.n)+(hasAst(p)?'<span class="ast" title="'+esc(FL[p.fl]||'Vínculo indireto')+'">*</span>':'')+(alt?'<small>'+esc(alt)+'</small>':'')+'</div></td>'+
    '<td><span class="badge" style="--c:'+SC[p.stage]+'">'+esc(p.stage)+'</span><div class="sub">'+esc(p.sdetail||'')+'</div>'+(p.hasSpend?'<div class="sub">Gasto total: US$ '+Math.round(p.spend).toLocaleString('pt-BR')+'</div>':'')+(p.pr?'<div class="sub" style="color:#8a4b2a">'+(p.pr.th==='v'?'🟢':p.pr.th==='a'?'🟡':p.pr.th==='p'?'⚫':'🔴')+' ✉ proposta: '+esc(p.pr.a)+(p.pr.neg?' · evitar abordar':'')+'</div>':(p.tx?'<div class="sub">'+(p.tx.th==='v'?'🟢':p.tx.th==='a'?'🟡':p.tx.th==='p'?'⚫':'🔴')+' '+p.tx.tt+'</div>':''))+'</td>'+
-   '<td class="num">'+(p.ntrips||'–')+'</td>'+'<td class="num">'+(p.ix!=null?'<b>'+p.ix+'</b>':'–')+'</td>'+
+   '<td class="num">'+(p.ntrips||0)+'</td>'+'<td class="num">'+(p.ix!=null?'<b>'+p.ix+'</b>':'<span title="Not available yet">NAY</span>')+'</td>'+
    '<td class="hide-m dt">'+(p.last?fmt(p.last)+'<div class="sub">'+ago(p.last)+'</div>':'–')+'</td>'+
    '<td class="hide-m">'+(esc(p.cs.join(', '))||'–')+'</td>'+
    '<td class="hide-m">'+(esc(p.ds.join(', '))||'<span class="sub">direto / não informado</span>')+'</td>'+
    '<td class="hide-m chn">'+(CH[u.ch]||'–')+'</td><td class="hide-m">'+FAB(p.u)+'</td>';
+  [...tr.querySelectorAll('td.num')].forEach((c,i)=>{c.dataset.l=['Viagens','Índice'][i]||''});
   tr.onclick=()=>openP(p);tb.appendChild(tr)});
  if(r.length>S.n){const m=el('button','more','Mostrar mais '+Math.min(200,r.length-S.n).toLocaleString('pt-BR')+' de '+(r.length-S.n).toLocaleString('pt-BR')+' restantes');m.onclick=()=>{S.n+=200;renderRows()};f.appendChild(m)}}
 function go(){S.n=100;S.kn={};syncControls();renderStages();renderRows()}
@@ -493,7 +497,7 @@ function renderDetail(p){
  else if(p.t)txt='Sem registro do primeiro contato. O registro mais antigo é o fechamento em '+fmt(p.t[0].s||p.t[0].p)+'.';
  else txt=u.first?'Entrou no UChat em '+fmt(u.first)+'.':'Sem conversa do UChat ligada a este cliente.';
  c0.appendChild(el('p',null,esc(txt)));
- {const fk=u.fa&&u.fa.k,ri=p.vf?3:(fk==='cot'||hasQ(p))?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t&&!p.sa){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?(fk==='cot'?'enviada':hasQ(p)?'orçamento pedido':'enviada'):(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.vf?'d':'',p.vf?'citado no UChat':'não localizado'],['Viagem','','não localizada']]))}}
+ {const fk=u.fa&&u.fa.k,ri=p.lk?3:(fk==='cot'||hasQ(p))?2:fk==='hum'?1:fk?0:-1,cs=(n)=>ri>=n?(ri===n?'c':'d'):'';if(!p.t&&!p.sa){c0.appendChild(bar([['Contato','d',fmt(u.first)],['Bot',cs(0),ri>=0?(ri===0?'agora':'passou'):'–'],['Atend. humano',cs(1),ri>=1?(ri===1?'agora':'passou'):'–'],['Cotação',ri>=3?'d':ri>=2?'c':(hasQ(p)?'d':''),ri>=3?((hasQ(p)||fk==='cot')?'enviada':'fechou'):ri>=2?(fk==='cot'?'enviada':hasQ(p)?'orçamento pedido':'enviada'):(hasQ(p)?'orçamento pedido':'sem registro')],['Fechamento',p.lk?'d':'',p.lk?'lançada no Odoo':(p.vf?'não lançada no Odoo':'não localizado')],['Viagem',(viagemBarra(p)||['',''])[0],(viagemBarra(p)||['','não localizada'])[1]]]))}}
  {const h0=c0.firstChild,b0=el('div');b0.style.cssText='display:flex;flex-direction:column;gap:10px';[...c0.childNodes].slice(1).forEach(n=>b0.appendChild(n));c0.appendChild(b0);const ch0=el('span','chev','▸');h0.insertBefore(ch0,h0.firstChild);h0.style.cursor='pointer';
   const s0=o=>{b0.style.display=o?'flex':'none';ch0.textContent=o?'▾':'▸';c0.dataset.o=o?'1':'0'};h0.onclick=()=>s0(c0.dataset.o!=='1');s0(!p.t||(p.vc||[]).some(v=>v.k===-1));TGL.push(s0)}
  {const v0=(p.vc||[]).filter(v=>v.k===-1);if(v0.length)c0.appendChild(vcBlock(v0))}
@@ -505,7 +509,7 @@ function renderDetail(p){
   c.appendChild(el('h3',null,(k+1)+'ª viagem'+(t.c?' · '+esc(t.c):'')+'<span class="sub" style="font-weight:400;margin-left:auto">'+fmt(t.p)+' → '+fmt(t.r)+'</span>'));
   c.appendChild(bar(tripSteps(t,k,p)));{const vk=(p.vc||[]).filter(v=>v.k===k);if(vk.length)c.appendChild(vcBlock(vk))}
   const kv=el('dl','kv'),ad=(a,b)=>{if(b)kv.appendChild(el('div',null,'<dt>'+a+'</dt><dd>'+esc(b)+'</dd>'))};
-  const cz=CIDK(p,t);ad('Retirada',cz&&cz[0]?cz[0]:'não informada');ad('Devolução',cz&&cz[1]?cz[1]:'não informada');ad('Fechamento',t.s?fmt(t.s):'');ad('Duração',(days(D(t.p),D(t.r))+1)+' dias');const tx=TXK(p,t);ad('Locadora',tx&&tx[0]?tx[0]:'não informada');ad('Categoria do veículo',tx&&tx[1]?tx[1]:'não informada');ad('Pessoas na viagem',tx&&tx[4]?tx[4]:'não informado');ad('Assessoria',tx&&tx[2]?'Sim':'Não');ad('Valor da viagem',tx&&tx[3]!=null?'US$ '+tx[3].toLocaleString('pt-BR')+(tx[5]?' (cancelada)':''):'não informado');ad('Emissor',t.e);ad('Distribuidor',t.d||'Direto / não informado');c.appendChild(kv);
+  const cz=CIDK(p,t);ad('Retirada',(cz&&cz[0]?cz[0]:'não informada')+(t.p?' · '+fmt(t.p):''));ad('Devolução',(cz&&cz[1]?cz[1]:'não informada')+(t.r?' · '+fmt(t.r):''));ad('Fechamento',t.s?fmt(t.s):'');ad('Duração',(days(D(t.p),D(t.r))+1)+' dias');const tx=TXK(p,t);ad('Locadora',tx&&tx[0]?tx[0]:'não informada');ad('Categoria do veículo',tx&&tx[1]?tx[1]:'não informada');ad('Pessoas na viagem',tx&&tx[4]?tx[4]:'não informado');ad('Assessoria',tx&&tx[2]?'Sim':'Não');ad('Valor da viagem',tx&&tx[3]!=null?'US$ '+tx[3].toLocaleString('pt-BR')+(tx[5]?' (cancelada)':''):'não informado');ad('Emissor',t.e);ad('Distribuidor',t.d||'Direto / não informado');c.appendChild(kv);
   const hd=c.firstChild,bd=el('div');bd.style.cssText='display:flex;flex-direction:column;gap:10px';[...c.childNodes].slice(1).forEach(n=>bd.appendChild(n));
   const z0=CIDK(p,t),x0=TXK(p,t),sm=el('div','sub tsm',esc([z0&&z0[0]?(z0[0]+(z0[1]&&z0[1]!==z0[0]?' → '+z0[1]:'')):'',x0&&x0[0]?x0[0]+(x0[1]?' · '+x0[1]:''):'',x0&&x0[3]!=null?'US$ '+x0[3].toLocaleString('pt-BR'):''].filter(Boolean).join('  ·  ')));
   const chev=el('span','chev','▾');hd.insertBefore(chev,hd.firstChild);hd.style.cursor='pointer';
@@ -523,7 +527,7 @@ function renderDetail(p){
    Object.keys(nm).forEach(k=>(E[k]||[]).forEach(x=>{if(D(x)>D(L.r))ls.push([nm[k],x])}));ls.sort((a,b)=>D(a[1])-D(b[1]));
    if(ls.length)c.appendChild(el('div','alert i','<b>Depois da última viagem, no chat:</b><br>'+ls.map(e=>esc(e[0])+': '+esc(fmt(e[1]))).join('<br>')));
    item(isR||!nv?'●':(p.t.length+1)+'ª',isR?'now':'',c);if(isR&&p.pr)item('✉','y',propCard(p));else if(isR&&p.tx)item('✉','y',propLite(p))}}
- if(!p.t){const c=el('div','card');c.appendChild(el('h3',null,'1ª viagem'));c.appendChild(el('p',null,'Próxima etapa: fechar a primeira viagem.'));c.style.cssText='opacity:.55;border-style:dashed;background:var(--soft)';item('1ª','',c)}
+ if(!p.t){const c=el('div','card');c.appendChild(el('h3',null,'1ª viagem'));{const LT=viagensLig(p);if(LT.length){c.firstChild.textContent='Viagens do cliente ligado';LT.forEach(x=>c.appendChild(el('p',null,esc(x.n)+': retirada '+fmt(x.t.p)+(x.t.r?', devolução '+fmt(x.t.r):'')+' ('+viagemSt(x)+')')));item(LT.some(x=>viagemSt(x)!=='já viajou')?'●':'✓',LT.some(x=>viagemSt(x)!=='já viajou')?'now':'y',c)}else{c.appendChild(el('p',null,'Próxima etapa: fechar a primeira viagem.'));c.style.cssText='opacity:.55;border-style:dashed;background:var(--soft)';item('1ª','',c)}}}
  if(!p.t&&p.cand){const c=el('div','card');c.appendChild(el('h3',null,'Possível cliente no Odoo'));
   const x=el('p',null,'Confiança baixa: <b>'+esc(p.cand.n)+'</b> tem pontos em comum ('+esc(p.cand.ev.join(', '))+'), mas não bateu telefone nem e-mail.<br>');x.appendChild(jump(ALL[p.cand.i],'Abrir '+p.cand.n));c.appendChild(x);db.appendChild(c)}
  db.appendChild(el('p','hint','Barra cheia: etapa concluída. Tracejada: inferida. Verde: momento atual. O UChat guarda só os últimos 12 meses, então viagens antigas não têm datas do chat.'))}
@@ -565,6 +569,9 @@ function saCards(p,item){const u=p.u||{};
   ad('Contratada em',x.s?fmt(x.s):'');ad('Valor','US$ '+(x.v||0).toLocaleString('pt-BR'));ad('Especialista',x.e);
   ad('Locação','Não contratada com a Motorhome Trips (só assessoria)');ad('Roteiro entregue','Link a ser incluído (pendente)');
   c.appendChild(kv);item(p.sa.length>1?(k+1)+'ª':'●',k===p.sa.length-1?'now':'y',c)})}
+function viagensLig(p){return (p.lk||[]).flatMap(n=>{const q=ALL.find(x=>x.kind==='c'&&x.n===n);return q&&q.t?q.t.map(t=>({n:n,t:t})):[]}).filter(x=>x.t&&x.t.p).sort((a,b)=>a.t.p<b.t.p?-1:a.t.p>b.t.p?1:0)}
+function viagemSt(x){return TODAY<D(x.t.p)?'ainda vai viajar':(!x.t.r||TODAY<=D(x.t.r))?'em viagem':'já viajou'}
+function viagemBarra(p){const L=viagensLig(p);if(!L.length)return null;const f=L.find(x=>viagemSt(x)!=='já viajou');if(f)return viagemSt(f)==='em viagem'?['c','em viagem agora']:['c','agendada para '+fmt(f.t.p)];const u=L[L.length-1];return ['d','realizada em '+fmt(u.t.r||u.t.p)]}
 function jump(q,l){const b=el('button','lk',esc(l));b.onclick=()=>openP(q);return b}
 function bar(st){const w=el('div','stp');st.forEach(([a,c,v])=>w.appendChild(el('div','sp '+c,'<i></i><b>'+esc(a)+'</b><span>'+esc(v)+'</span>')));return w}
 function tripSteps(t,ix,p){const u=p.u||{},E=u.ev||{},sg=t.s?D(t.s):null,prev=ix>0?D(p.t[ix-1].r):null,pk=D(t.p),rt=D(t.r);
@@ -576,8 +583,8 @@ function tripSteps(t,ix,p){const u=p.u||{},E=u.ev||{},sg=t.s?D(t.s):null,prev=ix
  return [[ix>0?'Novo pedido':'Contato',c(0,!!fc),fc?fmt(fc):'sem registro'],
   ['Cotação',c(1,q.length||hq),q.length?fmt(q[0])+(q.length>1?' ('+q.length+'x)':''):hq?'registrada':'sem registro'],
   ['Contrato',c(2,ct.length||t.s),ct.length?fmt(ct[ct.length-1]):py.length?fmt(py[0]):t.s?fmt(t.s):'sem registro'],
-  ['Pré-viagem',c(3,true),cur===3?'faltam '+days(TODAY,pk)+' dias':sg?(sg>pk?'fechamento registrado após a retirada':days(sg,pk)+' dias de espera'):'docs e voucher'],
-  ['Viagem',c(4,true),(days(pk,rt)+1)+' dias'],
+  ['Pré-viagem',c(3,true),cur===3?'faltam '+days(TODAY,pk)+' dias':sg?(sg>pk?'fechamento registrado após a retirada':(TODAY>=pk?fmt(t.s)+' → '+fmt(t.p)+' · '+days(sg,pk)+' dias':days(sg,pk)+' dias de espera')):'docs e voucher'],
+  ['Viagem',c(4,true),TODAY>rt?fmt(t.p)+' → '+fmt(t.r)+' · '+(days(pk,rt)+1)+' dias':(days(pk,rt)+1)+' dias'],
   (()=>{const nx=p.t[ix+1],lim=nx?D(nx.p):null,pvs=(p.pv||[]).filter(d=>D(d)>=rt&&(!lim||D(d)<lim)),late=TODAY>addD(rt,30);
  if(pvs.length)return['Pós-viagem','d','Conversa em '+fmt(pvs[0])];
  if(late)return['Pós-viagem','x','Não realizado'];
@@ -612,7 +619,7 @@ function uchat(p){const u=p.u,w=el('div');w.style.cssText='display:flex;flex-dir
  w.appendChild(el('div','alert '+k,'<b style="opacity:.7">Fase do atendimento:</b> '+tx))}
  const c=el('div','card');c.appendChild(el('h3',null,'Dados da conversa'));
  const kv=el('dl','kv'),ad=(a,b)=>{if(b)kv.appendChild(el('div',null,'<dt>'+a+'</dt><dd>'+esc(b)+'</dd>'))};
- ad('Nome no chat',u.nm);ad('Canal',CH[u.ch]||u.ch);ad('Entrou em',u.first?fmt(u.first):'');ad('Última interação',u.last?fmt(u.last)+' ('+ago(u.last)+')':'');ad('Origem',org.join(', '));ad('Orçamento pedido',hasQ(p)?'Sim':'');ad('Pesquisa pós-viagem',u.survey);ad('Vendas citadas',p.vf);
+ ad('Nome no chat',u.nm);ad('Canal',CH[u.ch]||u.ch);ad('Entrou em',u.first?fmt(u.first):'');ad('Última interação',u.last?fmt(u.last)+' ('+ago(u.last)+')':'');ad('Origem',org.join(', '));ad('Orçamento pedido',hasQ(p)?'Sim':'');ad('Pesquisa pós-viagem',u.survey);ad('Reservas citadas no chat (não contam como venda)',p.vf);
  c.appendChild(kv);
  if(sts.length){const t=el('div','tags');sts.forEach(s=>t.appendChild(el('span','tag',esc(s))));c.appendChild(t)}
  if(int.length)c.appendChild(el('p',null,'Locadoras de interesse: '+esc(int.join(', '))));
@@ -717,7 +724,7 @@ function notes(){const nc=ALL.filter(p=>p.kind==='c').length,ca=ALL.filter(p=>p.
  '<p><b>O asterisco (*).</b> Confiabilidade reduzida por motivo identificado: familiar ou acompanhante, contrato em nome de outra pessoa, organizador de grupo, agência, parceiro ou contato interno. São '+f(ci)+' vínculos indiretos e '+f(na)+' registros com asterisco.</p>'+
  '<p><b>Janela de recompra.</b> Entre 12 e 36 meses desde a última viagem: mediana de 1,5 ano entre viagens e três quartos dos retornos em até 3 anos.</p>'+
  '<p><b>Proposta de viagem (Reativação).</b> '+f(np)+' clientes em Reativação têm proposta do projeto de recorrência (clientes com 2 viagens ou mais): roteiro sugerido entre os 5 de referência, mês provável, momento de enviar, índice de retorno, quem assina e rascunho de e-mail. A decisão é dos especialistas. '+f(nn)+' deles têm sentimento negativo nas conversas e estão marcados para evitar abordagem. Os demais clientes em Reativação ainda não têm proposta.</p>'+
-  '<p><b>Limites.</b> O UChat só tem conversas recentes, então clientes antigos geralmente não têm contato ligado. A data do pedido de orçamento não é registrada, só se houve pedido. '+f(nv)+' contatos citam vendas que não foram achadas no Odoo. O mesmo cliente com telefones e e-mails diferentes pode aparecer duas vezes.</p>'}
+  '<p><b>Limites.</b> O UChat só tem conversas recentes, então clientes antigos geralmente não têm contato ligado. A data do pedido de orçamento não é registrada, só se houve pedido. Reservas citadas no chat (campo Vendas fechadas do UChat) não contam como venda: só vale o que está lançado no Odoo. O mesmo cliente com telefones e e-mails diferentes pode aparecer duas vezes.</p>'}
 
 /* eventos */
 let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=e.target.value;go()},120)});
